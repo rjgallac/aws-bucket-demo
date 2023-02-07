@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Static site for Rob
+
+Resources:
+  # AccessLogBucket:
+  #   Type: "AWS::S3::Bucket"
+  #   Properties:
+  #     AccessControl: LogDeliveryWrite
+  S3Bucket:
+    DeletionPolicy: Delete
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: robs-static-bucket-name-1111
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # LoggingConfiguration:
+      #   DestinationBucketName: !Ref AccessLogBucket
+    Description: Creating Amazon S3 bucket from CloudFormation      
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'      
+Outputs:
+  S3Bucket:
+    Description: Bucket Created using this template.
+    Value: !Ref S3Bucket
